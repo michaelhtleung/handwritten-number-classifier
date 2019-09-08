@@ -1,0 +1,8 @@
+1. why do we have to call tf.Variable() on our weights and biases? 
+
+2. when do we need to call tf.Varible() vs tf.placeholder()?
+
+Functions to review in TensorFlow API:
+tf.reduce_mean()
+tf.nn.softmax_cross_entropy_wiht_logits()
+tf.train.AdamOptimizer().minimize()
