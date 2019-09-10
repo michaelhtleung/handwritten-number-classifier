@@ -6,6 +6,7 @@ import os
 
 import libSevenSegDisplay as SSD
 
+# functions
 def setupPins(pinArray, setting):
     for pin in pinArray:
         if (setting is "OUT"):
@@ -17,7 +18,7 @@ def turnOffPins(pinArray):
     for pin in pinArray:
         GPIO.output(pin, GPIO.LOW)
 
-img_path = '/home/pi/Projects/rpi-number-classifier/capture.jpg'
+img_path = './camera-capture.jpg'
 img_filename = os.path.basename(img_path)
 img = open(img_path, 'rb').read() # read in data as bytes
 

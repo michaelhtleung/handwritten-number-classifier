@@ -11,7 +11,7 @@ def processImg(img):
 	return img
 
 with tf.Session() as sess:
-	new_saver = tf.train.import_meta_graph('my_test_model-1000.meta')
+	new_saver = tf.train.import_meta_graph('./tensorflow/demo/my_test_model-1000.meta')
 	new_saver.restore(sess, tf.train.latest_checkpoint('./'))
 
 	graph = tf.get_default_graph()
