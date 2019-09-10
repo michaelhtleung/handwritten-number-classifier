@@ -13,13 +13,13 @@ size = 28, 28
 
 img_base_path = "./server-received-capture"
 
-#img_processed_path = img_base_path + str(img_num) + ".jpg"
-#img_processed_base_path = './processed-picture'
+img_processed_base_path = './processed-picture'
+img_processed_path = img_processed_base_path + ".jpg"
 
 # functions
 def processImg(img):
 	img.thumbnail(size)
-	img.save(processed_img_path)
+	img.save(img_processed_path)
 	img = np.invert(img).ravel()
 	return img
 
@@ -38,23 +38,23 @@ def index():
 		img_fd = os.open(img_path, os.O_WRONLY | os.O_CREAT)
 		os.write(img_fd, (request.data)) 
 		os.close(img_fd)
-#
-#		with tf.Session() as sess:
-#			new_saver = tf.train.import_meta_graph('./tensorflow-demo/my_test_model-1000.meta')
-#			new_saver.restore(sess, tf.train.latest_checkpoint('./tensorflow-demo/'))
-#
-#			graph = tf.get_default_graph()
-#			X = graph.get_tensor_by_name("X:0")
-#			Y = graph.get_tensor_by_name("Y:0")
-#
-#			# manipulate single image
-#			img = Image.open(img_path).convert('L')
-#			img = processImg(img)
-#
-#			op_to_restore = graph.get_tensor_by_name("output:0")
-#
-#			# generate prediction on single image
-#			prediction = sess.run(tf.argmax(op_to_restore, 1), feed_dict={X: [img]})
+
+		with tf.Session() as sess:
+			new_saver = tf.train.import_meta_graph('./tensorflow-demo/my_test_model-1000.meta')
+			new_saver.restore(sess, tf.train.latest_checkpoint('./tensorflow-demo/'))
+
+			graph = tf.get_default_graph()
+			X = graph.get_tensor_by_name("X:0")
+			Y = graph.get_tensor_by_name("Y:0")
+
+			# manipulate single image
+			img = Image.open(img_path).convert('L')
+			img = processImg(img)
+
+			op_to_restore = graph.get_tensor_by_name("output:0")
+
+			# generate prediction on single image
+			prediction = sess.run(tf.argmax(op_to_restore, 1), feed_dict={X: [img]})
 #			# print("Prediction for test image:", np.squeeze(prediction))
 #			prediction = str( np.squeeze(prediction) )
 #			print(prediction)
