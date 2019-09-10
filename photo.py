@@ -1,11 +1,10 @@
 import RPi.GPIO as GPIO
 from picamera import PiCamera
 from time import sleep
+import requests
+import os
 
 import libSevenSegDisplay as SSD
-
-
-
 
 def setupPins(pinArray, setting):
     for pin in pinArray:
@@ -17,6 +16,12 @@ def setupPins(pinArray, setting):
 def turnOffPins(pinArray):
     for pin in pinArray:
         GPIO.output(pin, GPIO.LOW)
+
+img_path = '/home/pi/Projects/rpi-number-classifier/capture.jpg'
+img_filename = os.path.basename(img_path)
+img = open(img_path, 'rb').read() # read in data as bytes
+
+addr = "http://mhtl-xjdf.localhost.run/"
 
 # configure GPIO
 GPIO.setmode(GPIO.BCM)
@@ -40,6 +45,7 @@ cathodeToPin = {
         "F": 6,
         "G": 26
 }
+
 butPin = 4
 GPIO.setup(butPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 setupPins(ledPin, "IN")
@@ -60,7 +66,8 @@ try:
         else: # button is pressed
             sleep(2)
             # sleep for at least 2 seconds so the camera can adjust light levels
-            camera.capture('/home/pi/Projects/rpi-number-classifier/capture.jpg')
+            camera.capture(img_path)
+            response = requests.post(addr, data=img)
             for character in range(0, 10):
                 SSD.displayCharacter(character, cathodeToPin)
                 sleep(0.3)
