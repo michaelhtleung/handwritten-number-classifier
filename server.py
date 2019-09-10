@@ -11,8 +11,10 @@ import tensorflow as tf
 # dimensions to shrink RPI picture to
 size = 28, 28
 
-img_path = "./server-received-capture.jpg"
-processed_img_path = './processed-picture.jpg'
+img_base_path = "./server-received-capture"
+
+#img_processed_path = img_base_path + str(img_num) + ".jpg"
+#img_processed_base_path = './processed-picture'
 
 # functions
 def processImg(img):
@@ -31,10 +33,11 @@ def index():
 	if request.method == 'POST':
 		prediction = ''
 		print(request.data)
-#		os.remove(img_path)
-#		img_fd = os.open(img_path, os.O_WRONLY | os.O_CREAT)
-#		os.write(img_fd, (request.data)) 
-#		os.close(img_fd)
+
+		img_path = img_base_path + ".jpg"
+		img_fd = os.open(img_path, os.O_WRONLY | os.O_CREAT)
+		os.write(img_fd, (request.data)) 
+		os.close(img_fd)
 #
 #		with tf.Session() as sess:
 #			new_saver = tf.train.import_meta_graph('./tensorflow-demo/my_test_model-1000.meta')
