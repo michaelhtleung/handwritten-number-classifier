@@ -17,11 +17,10 @@ def turnOffPins(pinArray):
     for pin in pinArray:
         GPIO.output(pin, GPIO.LOW)
 
-img_path = '/home/pi/Projects/rpi-number-classifier/capture.jpg'
-img_filename = os.path.basename(img_path)
-img = open(img_path, 'rb').read() # read in data as bytes
+img_num = 0;
+img_base_path = './capture'
 
-addr = "http://mhtl-xjdf.localhost.run/"
+addr = "http://mhtl-kl4k.localhost.run/"
 
 # configure GPIO
 GPIO.setmode(GPIO.BCM)
@@ -55,7 +54,7 @@ turnOffPins(ledPin)
 #configure camera
 camera = PiCamera()
 camera.rotation = 180
-camera.resolution = (1000, 1000)
+camera.resolution = (2000, 2000)
 
 print("Press the button to capture photo. Press CTRL+C to exit")
 camera.start_preview(alpha=200)
@@ -66,16 +65,23 @@ try:
         else: # button is pressed
             sleep(2)
             # sleep for at least 2 seconds so the camera can adjust light levels
+            img_path = img_base_path + str(img_num) + ".jpg"
+            img_filename = os.path.basename(img_path)
             camera.capture(img_path)
-            response = requests.post(addr, data=img)
-            for character in range(0, 10):
-                SSD.displayCharacter(character, cathodeToPin)
-                sleep(0.3)
-                turnOffPins(ledPin)
+            img_num += 1
+
+            img = open(img_path, 'rb')
+            data = img.read() # read in data as bytes
+            response = requests.post(addr, data=data)
+            img.close()
+
+            # display prediction
+            character = int(response.text, 10)
+            SSD.displayCharacter(character, cathodeToPin)
+            sleep(2)
+            turnOffPins(ledPin)
 
 except KeyboardInterrupt: # if ctrl+c is pressed, exit program cleanly
-    GPIO.cleanup()
-except: 
     GPIO.cleanup()
 finally:
     camera.stop_preview()
