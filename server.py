@@ -34,6 +34,27 @@ def processImg(img_path):
 	cv2.imshow('bw', bw)
 	cv2.waitKey(0)
 
+	near = cv2.resize(255-bw, size, cv2.INTER_NEAREST)
+	cv2.imshow('nearest gray', near)
+	cv2.waitKey(0)
+
+	linear = cv2.resize(255-bw, size, cv2.INTER_LINEAR)
+	cv2.imshow('linear gray', linear)
+	cv2.waitKey(0)
+
+	area = cv2.resize(255-bw, size, cv2.INTER_AREA)
+	cv2.imshow('area gray', area)
+	cv2.waitKey(0)
+
+	cubic = cv2.resize(255-bw, size, cv2.INTER_CUBIC)
+	cv2.imshow('cubic gray', cubic)
+	cv2.waitKey(0)
+
+	lan = cv2.resize(255-bw, size, cv2.INTER_LANCZOS4)
+	cv2.imshow('lan gray', lan)
+	cv2.waitKey(0)
+
+
 	smoll_bw = cv2.resize(255-bw, size)
 	cv2.imshow('smoll bw', smoll_bw)
 	cv2.waitKey(0)
@@ -41,16 +62,6 @@ def processImg(img_path):
 
 	smoll_bw = smoll_bw.flatten() / 255.0
 	return smoll_bw
-
-	smoll_gray = cv2.resize(255-gray, size)
-	cv2.imshow('smoll gray', smoll_gray)
-	cv2.waitKey(0)
-
-	cv2.destroyAllWindows()
-	
-	smoll_gray = smoll_gray.flatten() / 255.0
-
-	return smoll_gray
 
 
 app = Flask(__name__)
