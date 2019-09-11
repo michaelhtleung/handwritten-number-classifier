@@ -16,22 +16,39 @@ img_processed_path = img_processed_base_path + ".jpg"
 # functions
 def processImg(img_path):
 	# dimensions to shrink RPI picture to
-	size = 28, 28
+	size = (28, 28)
 
-	image = cv2.imread(img_path)
-	cv2.imshow('image', image)
-	cv2.waitKey(0)
+	gray  = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
 
-	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+	#image  = cv2.imread(img_path)
+	#cv2.imshow('image', image)
+	#cv2.waitKey(0)
+
+	#gray = cv2.cvtColor(image, cv2.IMREAD_GRAYSCALE)
 	cv2.imshow('gray', gray)
 	cv2.waitKey(0)
 
-	smoll_gray = cv2.resize(gray, size)
-	cv2.imshow('smoll gray', smoll_gray)
+	thresh = 127
+	bw = cv2.threshold(gray, thresh, 255, cv2.THRESH_BINARY)[1]
+	cv2.imshow('bw', bw)
+	cv2.waitKey(0)
+
+	smoll_bw = cv2.resize(255-bw, size)
+	cv2.imshow('smoll bw', smoll_bw)
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
+
+	smoll_bw = smoll_bw.flatten() / 255.0
+	return smoll_bw
+
+	smoll_gray = cv2.resize(255-gray, size)
+	cv2.imshow('smoll gray', smoll_gray)
+	cv2.waitKey(0)
+
+	cv2.destroyAllWindows()
 	
-	smoll_gray = np.array( smoll_gray ).flatten()
+	smoll_gray = smoll_gray.flatten() / 255.0
 
 	return smoll_gray
 
