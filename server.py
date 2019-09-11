@@ -19,44 +19,18 @@ def processImg(img_path):
 	size = (28, 28)
 
 	gray  = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
-
-
-	#image  = cv2.imread(img_path)
-	#cv2.imshow('image', image)
+	#cv2.imshow('gray', gray)
 	#cv2.waitKey(0)
-
-	#gray = cv2.cvtColor(image, cv2.IMREAD_GRAYSCALE)
-	cv2.imshow('gray', gray)
-	cv2.waitKey(0)
 
 	thresh = 127
 	bw = cv2.threshold(gray, thresh, 255, cv2.THRESH_BINARY)[1]
+
 	cv2.imshow('bw', bw)
 	cv2.waitKey(0)
 
-	near = cv2.resize(255-bw, size, cv2.INTER_NEAREST)
-	cv2.imshow('nearest gray', near)
-	cv2.waitKey(0)
-
-	linear = cv2.resize(255-bw, size, cv2.INTER_LINEAR)
-	cv2.imshow('linear gray', linear)
-	cv2.waitKey(0)
-
-	area = cv2.resize(255-bw, size, cv2.INTER_AREA)
-	cv2.imshow('area gray', area)
-	cv2.waitKey(0)
-
-	cubic = cv2.resize(255-bw, size, cv2.INTER_CUBIC)
-	cv2.imshow('cubic gray', cubic)
-	cv2.waitKey(0)
-
-	lan = cv2.resize(255-bw, size, cv2.INTER_LANCZOS4)
-	cv2.imshow('lan gray', lan)
-	cv2.waitKey(0)
-
-
 	smoll_bw = cv2.resize(255-bw, size)
 	cv2.imshow('smoll bw', smoll_bw)
+
 	cv2.waitKey(0)
 	cv2.destroyAllWindows()
 
@@ -72,6 +46,7 @@ def index():
 	if request.method == 'GET':
 		return "Hello World!"
 	if request.method == 'POST':
+		print("processing...")
 		prediction = ''
 		#print(request.data)
 
@@ -95,9 +70,8 @@ def index():
 
 			# generate prediction on single image
 			prediction = sess.run(tf.argmax(op_to_restore, 1), feed_dict={X: [img]})
-			# print("Prediction for test image:", np.squeeze(prediction))
 			prediction = str( np.squeeze(prediction) )
-			print(prediction)
+			print("Prediction for test image:", prediction)
 			return prediction
 
 app.run(port=3000)
