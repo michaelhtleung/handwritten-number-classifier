@@ -22,7 +22,8 @@ def processImg(img_path):
 	#cv2.imshow('gray', gray)
 	#cv2.waitKey(0)
 
-	thresh = 127
+	#thresh = 127
+	thresh = 80
 	bw = cv2.threshold(gray, thresh, 255, cv2.THRESH_BINARY)[1]
 
 	cv2.imshow('bw', bw)
@@ -30,8 +31,8 @@ def processImg(img_path):
 
 	smoll_bw = cv2.resize(255-bw, size)
 	cv2.imshow('smoll bw', smoll_bw)
-
 	cv2.waitKey(0)
+
 	cv2.destroyAllWindows()
 
 	smoll_bw = smoll_bw.flatten() / 255.0
