@@ -1,10 +1,19 @@
 import RPi.GPIO as GPIO
 from picamera import PiCamera
+import threading
 from time import sleep
 import requests
 import os
 
 import libSevenSegDisplay as SSD
+
+unique_portion = "nnis"
+addr = "http://mhtl-" + unique_portion + ".localhost.run/"
+
+img_num = 0;
+img_base_path = './capture'
+
+response_received = False
 
 def setupPins(pinArray, setting):
     for pin in pinArray:
@@ -17,10 +26,11 @@ def turnOffPins(pinArray):
     for pin in pinArray:
         GPIO.output(pin, GPIO.LOW)
 
-img_num = 0;
-img_base_path = './capture'
-
-addr = "http://mhtl-kl4k.localhost.run/"
+def count_up():
+    count = 0
+    while (response_received is False):
+        print(count)
+        count += 1
 
 # configure GPIO
 GPIO.setmode(GPIO.BCM)
@@ -63,7 +73,7 @@ try:
         if GPIO.input(butPin): # button is released
             pass
         else: # button is pressed
-            sleep(2)
+            sleep(1)
             # sleep for at least 2 seconds so the camera can adjust light levels
             img_path = img_base_path + str(img_num) + ".jpg"
             img_filename = os.path.basename(img_path)
@@ -72,8 +82,14 @@ try:
 
             img = open(img_path, 'rb')
             data = img.read() # read in data as bytes
-            response = requests.post(addr, data=data)
             img.close()
+
+            larson_thread = threading.Thread(target=count_up, args=())
+            larson_thread.start()
+            response = requests.post(addr, data=data)
+            response_received = True
+            larson_thread.join()
+            print("larson thread joined")
 
             # display prediction
             character = int(response.text, 10)
