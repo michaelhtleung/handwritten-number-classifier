@@ -1,11 +1,12 @@
 import RPi.GPIO as GPIO
 from picamera import PiCamera
 import threading
-from time import sleep
+import time 
 import requests
 import os
 
 import libSevenSegDisplay as SSD
+#import larson
 
 unique_portion = "nnis"
 addr = "http://mhtl-" + unique_portion + ".localhost.run/"
@@ -14,6 +15,7 @@ img_num = 0;
 img_base_path = './capture'
 
 response_received = False
+larson_time_delay = 0.08
 
 def setupPins(pinArray, setting):
     for pin in pinArray:
@@ -32,10 +34,38 @@ def count_up():
         print(count)
         count += 1
 
+def shiftout(byte):
+    GPIO.output(PIN_LATCH, 0)
+    for x in range(8):
+        GPIO.output(PIN_DATA, (byte >> x) & 1)
+        GPIO.output(PIN_CLOCK, 1)
+        GPIO.output(PIN_CLOCK, 0)
+    GPIO.output(PIN_LATCH, 1)
+
+def run_larson_scanner():
+    b = 1;
+    while (response_received is False):
+        for x in range(7):
+            shiftout(b)
+            b = b << 1
+            time.sleep(larson_time_delay)
+
+        for x in range(7):
+            shiftout(b)
+            b = b >> 1
+            time.sleep(larson_time_delay)
+
 # configure GPIO
 GPIO.setmode(GPIO.BCM)
 
+# pins responsible only for larson scanner
+PIN_DATA = 14
+PIN_CLOCK = 15
+PIN_LATCH = 18
+larson_pins = [PIN_DATA, PIN_CLOCK, PIN_LATCH]
+
 # RPI BCM pin -> cathode character -> string of cathodes -> 7 segment character
+# pins responsible for only the 7 segment display LEDs
 ledPin = [
         17, 
         27, 
@@ -55,11 +85,13 @@ cathodeToPin = {
         "G": 26
 }
 
+all_output_pins = ledPin + larson_pins
+
 butPin = 4
 GPIO.setup(butPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-setupPins(ledPin, "IN")
-setupPins(ledPin, "OUT")
-turnOffPins(ledPin)
+setupPins(all_output_pins, "IN")
+setupPins(all_output_pins, "OUT")
+turnOffPins(all_output_pins)
 
 #configure camera
 camera = PiCamera()
@@ -73,7 +105,7 @@ try:
         if GPIO.input(butPin): # button is released
             pass
         else: # button is pressed
-            sleep(1)
+            time.sleep(1)
             # sleep for at least 2 seconds so the camera can adjust light levels
             img_path = img_base_path + str(img_num) + ".jpg"
             img_filename = os.path.basename(img_path)
@@ -84,18 +116,20 @@ try:
             data = img.read() # read in data as bytes
             img.close()
 
-            larson_thread = threading.Thread(target=count_up, args=())
+            #larson_thread = threading.Thread(target=count_up, args=())
+            larson_thread = threading.Thread(target=run_larson_scanner, args=())
             larson_thread.start()
             response = requests.post(addr, data=data)
             response_received = True
             larson_thread.join()
             print("larson thread joined")
+            turnOffPins(larson_pins)
 
             # display prediction
             character = int(response.text, 10)
             SSD.displayCharacter(character, cathodeToPin)
-            sleep(2)
-            turnOffPins(ledPin)
+            time.sleep(5)
+            turnOffPins(all_output_pins)
 
 except KeyboardInterrupt: # if ctrl+c is pressed, exit program cleanly
     GPIO.cleanup()
