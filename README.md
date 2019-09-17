@@ -56,4 +56,3 @@ The Raspberry Pi photographs images of handwritten digits and sends them to a we
 - multi-threaded programming (to run Larson Scanner)
 - webserver communication
 - bit shifting 
-- 
