@@ -42,8 +42,7 @@ def shiftout(byte):
         GPIO.output(PIN_CLOCK, 0)
     GPIO.output(PIN_LATCH, 1)
 
-def run_larson_scanner():
-    b = 1;
+def run_larson_scanner(b):
     while (response_received is False):
         for x in range(7):
             shiftout(b)
@@ -54,6 +53,10 @@ def run_larson_scanner():
             shiftout(b)
             b = b >> 1
             time.sleep(larson_time_delay)
+        
+def clear_larson_scanner():
+    for x in range(7):
+        shiftout(0)
 
 # configure GPIO
 GPIO.setmode(GPIO.BCM)
@@ -105,7 +108,8 @@ try:
         if GPIO.input(butPin): # button is released
             pass
         else: # button is pressed
-            time.sleep(1)
+            turnOffPins(ledPin)
+            response_received = False
             # sleep for at least 2 seconds so the camera can adjust light levels
             img_path = img_base_path + str(img_num) + ".jpg"
             img_filename = os.path.basename(img_path)
@@ -117,19 +121,16 @@ try:
             img.close()
 
             #larson_thread = threading.Thread(target=count_up, args=())
-            larson_thread = threading.Thread(target=run_larson_scanner, args=())
+            larson_thread = threading.Thread(target=run_larson_scanner, args=(1,))
             larson_thread.start()
             response = requests.post(addr, data=data)
             response_received = True
             larson_thread.join()
-            print("larson thread joined")
-            turnOffPins(larson_pins)
+            clear_larson_scanner()
 
             # display prediction
             character = int(response.text, 10)
             SSD.displayCharacter(character, cathodeToPin)
-            time.sleep(5)
-            turnOffPins(all_output_pins)
 
 except KeyboardInterrupt: # if ctrl+c is pressed, exit program cleanly
     GPIO.cleanup()
