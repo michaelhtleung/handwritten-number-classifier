@@ -12,19 +12,19 @@ The Raspberry Pi photographs images of handwritten digits and sends them to a we
 ## Pictures
 1. Handwritten digit classifier input image
 
-![](
+![](https://github.com/michaelhtleung/rpi-number-classifier/blob/master/media/rpi-input.png)
 
 2. Handwritten digit classifier loading shown with Larson scanner
 
-![](
+![](https://github.com/michaelhtleung/rpi-number-classifier/blob/master/media/rpi-loading.png)
 
 3. Handwritten digit classifier output answer
 
-![](
+![](https://github.com/michaelhtleung/rpi-number-classifier/blob/master/media/rpi-output.png)
 
 4. Hardware close up
 
-![](
+![](https://github.com/michaelhtleung/rpi-number-classifier/blob/master/media/rpi-close-up.JPG)
 
 ## Python3 Libraries, Frameworks, and Modules
 ### Server-side
