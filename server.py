@@ -23,15 +23,15 @@ def processImg(img_path):
 	#cv2.waitKey(0)
 
 	#thresh = 127
-	thresh = 80
+	thresh = 70
 	bw = cv2.threshold(gray, thresh, 255, cv2.THRESH_BINARY)[1]
 
-	cv2.imshow('bw', bw)
-	cv2.waitKey(0)
+#	cv2.imshow('bw', bw)
+#	cv2.waitKey(0)
 
 	smoll_bw = cv2.resize(255-bw, size)
-	cv2.imshow('smoll bw', smoll_bw)
-	cv2.waitKey(0)
+#	cv2.imshow('smoll bw', smoll_bw)
+#	cv2.waitKey(0)
 
 	cv2.destroyAllWindows()
 
